@@ -16,6 +16,7 @@ type AppPropsWithLayout = AppProps & {
 }
 
 function App({ Component, pageProps }: AppPropsWithLayout) {
+  console.log("App page onboard!")
 
   const getLayout = Component.getLayout ?? ((page) => page)
   return (
