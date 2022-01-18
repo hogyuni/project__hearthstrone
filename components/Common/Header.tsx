@@ -6,8 +6,10 @@ const StyledHeader = styled.div`
   top :0;
   width : 100vw;
   height : 6rem;
-  border-bottom-width : 1px;
+  border-style: solid;
+  border-bottom-width : 2px;
   border-bottom-color : #EBEBEB;
+  background-color : rgba(34, 34, 34, 0.8);
 `;
 
 const Header: NextPage = () => {
