@@ -1,18 +1,27 @@
 export const cardContent = [
   {
     rank: "orange",
-    name: "A"
+    name: "A",
+    image: null,
+    desc: "AAAAAAAAAAA",
+
   },
   {
     rank: "purple",
-    name: "A"
+    name: "A",
+    image: null,
+    desc: "AAAAAAAAAAA",
   },
   {
     rank: "silver",
-    name: "A"
+    name: "A",
+    image: null,
+    desc: "AAAAAAAAAAA",
   },
   {
     rank: "sapphire",
-    name: "A"
+    name: "A",
+    image: null,
+    desc: "AAAAAAAAAAA",
   }
 ]

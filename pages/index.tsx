@@ -1,10 +1,56 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, SetStateAction } from 'react';
+import { useState, useRef, RefObject } from "react";
 import styled from "styled-components";
 import Head from 'next/head'
-
 import { Layout } from "../components/index";
 import { cardContent } from "../constants/dummy";
-import { classNameBind } from "../utils/utils";
+import { useOutsideClick } from '../hooks/useOutsideClick';
+
+const StyledCardModal = styled.div`
+  display : none;
+  position : absolute;
+  top : 0;
+  width : 100vw;
+  height : 100vh;  
+  & > div {
+    width : 32rem;
+    background-color : #FFF
+  }
+  &.active {
+    display : flex;
+    justify-content: center;
+    align-items: center;
+  }
+`;
+
+interface CardModalProps {
+  setShowModal: React.Dispatch<SetStateAction<boolean>>;
+  showModal: boolean;
+  item: any
+}
+
+const CardModal = ({
+  setShowModal,
+  showModal,
+  item }: CardModalProps
+) => {
+  const divRef = useRef<HTMLDivElement>();
+  const isActive = showModal ? "active" : "";
+
+  useOutsideClick(divRef, () => {
+    setShowModal(!showModal)
+  });
+
+  return (
+    <StyledCardModal
+      className={isActive}
+    >
+      <div ref={divRef as RefObject<HTMLDivElement>} onClick={() => window.location.href = "/detail/1"} >
+        aaa
+      </div>
+    </StyledCardModal >
+  )
+}
 
 const StyledWrapper = styled.div`
   display : grid;
@@ -34,9 +80,9 @@ const Home = ({ title, list }: { title: string; list: any[] }) => {
   width : 30rem;
   height : 35rem;
   margin : 0 auto;
-  
   border-radius: 3px;
 
+  cursor : pointer;
   &.orange {
     border : 1px solid ${props => props.theme.orange};
     box-shadow : 0px 3px 15px 0px ${props => props.theme.orange};
@@ -54,6 +100,14 @@ const Home = ({ title, list }: { title: string; list: any[] }) => {
     box-shadow : 0px 3px 15px 0px ${props => props.theme.silver};
   }
 `
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [cardInfo, setCardInfo] = useState<any>({});
+
+  const handleModal = (item: any) => {
+    setShowModal(!showModal);
+    setCardInfo(item)
+  }
+
   return (
     <>
       <Head>
@@ -67,13 +121,14 @@ const Home = ({ title, list }: { title: string; list: any[] }) => {
               rank
             } = el;
             return (
-              <StyledCard className={rank}>
+              <StyledCard className={rank} onClick={() => handleModal(el)}>
                 {name}
               </StyledCard>
             )
           })
         }
       </StyledWrapper>
+      <CardModal setShowModal={setShowModal} showModal={showModal} item={cardInfo} />
     </>
   )
 }
@@ -98,4 +153,4 @@ const getLayout = (page: ReactElement) => {
 
 Home.getLayout = getLayout
 
-export default Home
+export default Home;
