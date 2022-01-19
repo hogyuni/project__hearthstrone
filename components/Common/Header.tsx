@@ -7,6 +7,7 @@ const StyledHeader = styled.div`
   width : 100vw;
   height : 6rem;
   border-style: solid;
+  border-width :0px;
   border-bottom-width : 2px;
   border-bottom-color : #EBEBEB;
   background-color : rgba(34, 34, 34, 0.8);

@@ -32,8 +32,8 @@ interface CardModalProps {
 const CardModal = ({
   setShowModal,
   showModal,
-  item }: CardModalProps
-) => {
+  item
+}: CardModalProps) => {
   const divRef = useRef<HTMLDivElement>();
   const isActive = showModal ? "active" : "";
 
@@ -60,6 +60,7 @@ const StyledWrapper = styled.div`
   margin : 0 auto;
   overflow : scroll;
   grid-row-gap: 15px;
+  background-color : rgba(34, 34, 34, 0.8);
   @media  (min-width : 751px) {
     grid-template-columns: 1fr;
   };
@@ -72,11 +73,9 @@ const StyledWrapper = styled.div`
   @media screen and (min-width : 1440px) {
     grid-template-columns: 1fr 1fr 1fr;
   };
-`
+`;
 
-const Home = ({ title, list }: { title: string; list: any[] }) => {
-
-  const StyledCard = styled.div`
+const StyledCard = styled.div`
   width : 30rem;
   height : 35rem;
   margin : 0 auto;
@@ -99,7 +98,10 @@ const Home = ({ title, list }: { title: string; list: any[] }) => {
     border : 1px solid ${props => props.theme.silver};
     box-shadow : 0px 3px 15px 0px ${props => props.theme.silver};
   }
-`
+`;
+
+const Home = ({ title, list }: { title: string; list: any[] }) => {
+
   const [showModal, setShowModal] = useState<boolean>(false)
   const [cardInfo, setCardInfo] = useState<any>({});
 
@@ -115,13 +117,13 @@ const Home = ({ title, list }: { title: string; list: any[] }) => {
       </Head>
       <StyledWrapper>
         {
-          list.map((el) => {
+          list.map((el: any, idx: number) => {
             const {
               name,
               rank
             } = el;
             return (
-              <StyledCard className={rank} onClick={() => handleModal(el)}>
+              <StyledCard key={idx.toString()} className={rank} onClick={() => handleModal(el)}>
                 {name}
               </StyledCard>
             )
