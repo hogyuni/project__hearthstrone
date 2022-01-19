@@ -1,9 +1,14 @@
-import type { ReactElement, SetStateAction } from 'react';
+import { ReactElement, SetStateAction, useCallback, useEffect } from 'react';
 import { useState, useRef, RefObject } from "react";
 import styled from "styled-components";
 import Head from 'next/head'
-import { Layout } from "../components/index";
-import { cardContent } from "../constants/dummy";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  cardListState,
+  characterFilterState
+} from "../states/atom";
+import { Layout, Classifier } from "../components/index";
+import { characterList, cardContent } from "../constants/dummy";
 import { useOutsideClick } from '../hooks/useOutsideClick';
 
 const StyledCardModal = styled.div`
@@ -38,7 +43,7 @@ const CardModal = ({
   const isActive = showModal ? "active" : "";
 
   useOutsideClick(divRef, () => {
-    setShowModal(!showModal)
+    if (showModal) setShowModal(false)
   });
 
   return (
@@ -52,15 +57,19 @@ const CardModal = ({
   )
 }
 
-const StyledWrapper = styled.div`
-  display : grid;
+const StyledContainer = styled.div`
   width : 100%;
   height : 100%;
-  padding : 1.5rem 0;
-  margin : 0 auto;
   overflow : scroll;
-  grid-row-gap: 15px;
   background-color : rgba(34, 34, 34, 0.8);
+`;
+
+const StyledWrapper = styled.div`
+  display : grid;
+  padding : 1.5rem 0;
+  width : 100%;
+  margin : 0 auto;
+  grid-row-gap: 15px;
   @media  (min-width : 751px) {
     grid-template-columns: 1fr;
   };
@@ -76,11 +85,12 @@ const StyledWrapper = styled.div`
 `;
 
 const StyledCard = styled.div`
+  display : block;
   width : 30rem;
   height : 35rem;
   margin : 0 auto;
   border-radius: 3px;
-
+  color : #FFF;
   cursor : pointer;
   &.orange {
     border : 1px solid ${props => props.theme.orange};
@@ -100,47 +110,65 @@ const StyledCard = styled.div`
   }
 `;
 
-const Home = ({ title, list }: { title: string; list: any[] }) => {
+const Home = ({ title, list, character }: { title: string; list: any[]; character: any[] }) => {
 
-  const [showModal, setShowModal] = useState<boolean>(false)
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const setCardList = useSetRecoilState(cardListState)
+  const alist = useRecoilValue(characterFilterState);
   const [cardInfo, setCardInfo] = useState<any>({});
 
-  const handleModal = (item: any) => {
-    setShowModal(!showModal);
+  useEffect(() => {
+    setCardList(list);
+  }, []);
+
+  const handleModal = useCallback((item: any) => {
+    setShowModal(true);
     setCardInfo(item)
-  }
+  }, [showModal])
 
   return (
     <>
       <Head>
         <title>{title}</title>
       </Head>
-      <StyledWrapper>
-        {
-          list.map((el: any, idx: number) => {
-            const {
-              name,
-              rank
-            } = el;
-            return (
-              <StyledCard key={idx.toString()} className={rank} onClick={() => handleModal(el)}>
-                {name}
-              </StyledCard>
-            )
-          })
-        }
-      </StyledWrapper>
-      <CardModal setShowModal={setShowModal} showModal={showModal} item={cardInfo} />
+      <StyledContainer>
+        <Classifier list={character} />
+        <StyledWrapper>
+          {
+            alist.map((el: any, idx: number) => {
+              const {
+                name,
+                fkey_name,
+                rank
+              } = el;
+              return (
+                <StyledCard
+                  key={idx.toString()}
+                  className={rank}
+                  onClick={() => {
+                    handleModal(el)
+                  }}>
+                  카드명 : {name} <br />
+                  카테고리 명 : {fkey_name}
+                </StyledCard>
+              )
+            })
+          }
+        </StyledWrapper>
+        <CardModal setShowModal={setShowModal} showModal={showModal} item={cardInfo} />
+      </StyledContainer>
     </>
   )
 }
 
 export const getServerSideProps = async () => {
   const list = cardContent;
+  const character = characterList;
   return {
     props: {
       title: "Welcome to the Jungle!",
       list,
+      character,
     }
   }
 }
